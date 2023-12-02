@@ -36,4 +36,25 @@ public class ClientService {
         }
     }
 
+    public Client save(Client client) {
+        return this.repository.save(client);
+    }
+
+    public void update(int id, Client client) {
+    try{
+        Client aux = repository.getReferenceById(id);
+        aux.setName(client.getName());
+        aux.setBalance(client.getBalance());
+        this.repository.save(aux);
+    }
+    catch(EntityNotFoundException e)
+    {
+        throw new EntityNotFoundException("cliente não cadastrado");
+    }
+    }
+
+    
+
+    
+
 }

@@ -1,5 +1,6 @@
 package br.com.fatec.hellospringboot.resources;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,13 +9,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.fatec.hellospringboot.entities.Client;
 import br.com.fatec.hellospringboot.repositories.ClientRepository;
 import br.com.fatec.hellospringboot.services.ClientService;
 
 @RestController
+@RequestMapping("clients")
 public class ClientController {
     
    
@@ -23,7 +30,7 @@ public class ClientController {
     private ClientService service;
 
 
-    @GetMapping("clients")
+    @GetMapping()
     public ResponseEntity<List<Client>> getClients(){
        
 
@@ -31,7 +38,7 @@ public class ClientController {
 
     }
 
-    @GetMapping("clients/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<Client> getClientById(@PathVariable int id){
        
 
@@ -39,7 +46,7 @@ public class ClientController {
 
     }
 
-    @DeleteMapping("clients/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable int id){
 
         this.service.deleteClientById(id);
@@ -48,4 +55,24 @@ public class ClientController {
 
     }
 
+    @PostMapping() 
+    public ResponseEntity<Client> save(@RequestBody Client client){
+
+        Client newclilent = this.service.save(client);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(newclilent.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(client);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Void> update( @PathVariable int id,@RequestBody Client client){
+        this.service.update(id,client);
+
+        return ResponseEntity.ok().build();
+    }
 }
